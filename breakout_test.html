@@ -52,8 +52,8 @@
             s = game.add.tileSprite(0, 0, 800, 600, 'starfield');
 
             bricks = game.add.group();
-            bricks.enableBody = true;
-            bricks.physicsBodyType = Phaser.Physics.ARCADE;
+            bricks.enableBody = true; //true para dizer que o objeto tem um corpo
+            bricks.physicsBodyType = Phaser.Physics.ARCADE; //a fisica do corpo é do tipo ARCADE
 
             var brick;
             
@@ -79,7 +79,7 @@
             //configura as funcoes do paddle
             paddle.body.collideWorldBounds = true;
             paddle.body.bounce.set(1);
-            paddle.body.immovable = true;
+            paddle.body.immovable = true; //true para dizer que o objeto é imovel em relação ao mundo
 
             //add um sprite para a ball, no centro do mundo
             //y-16 para subir a posicao
@@ -91,10 +91,11 @@
             
             ball.body.collideWorldBounds = true;
             ball.body.bounce.set(1);
-
+            
+            //add uma animação para a ball
             ball.animations.add('spin', [ 'ball_1.png', 'ball_2.png', 'ball_3.png', 'ball_4.png', 'ball_5.png' ], 50, true, false);
 
-            ball.events.onOutOfBounds.add(ballLost, this);
+            ball.events.onOutOfBounds.add(ballLost, this); //case a ball saia do mapa, é ativado a funcao ballLost
 
             //configura os textos presentes no game
             scoreText = game.add.text(32, 550, 'score: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
@@ -126,10 +127,12 @@
 
             if (ballOnPaddle)
             {
+                //fazer a bola movimentar junto do paddle
                 ball.body.x = paddle.x;
             }
             else
             {
+                //configurar a colisao da ball com paddle e bricks
                 game.physics.arcade.collide(ball, paddle, ballHitPaddle, null, this);
                 game.physics.arcade.collide(ball, bricks, ballHitBrick, null, this);
             }
@@ -141,11 +144,11 @@
             //configuracoes da bola apos sair do paddle
             if (ballOnPaddle)
             {
-                ballOnPaddle = false;
-                ball.body.velocity.y = -300;
-                ball.body.velocity.x = -75;
+                ballOnPaddle = false; //false para dizer que a bola não está no paddle
+                ball.body.velocity.y = -300; //configura uma velocity aleatoria no eixo y
+                ball.body.velocity.x = -75; //configura uma velocity aleatoria no eixo x
                 ball.animations.play('spin');
-                introText.visible = false;
+                introText.visible = false; //deixa o introText não mais visivel
             }
 
         }
