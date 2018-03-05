@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>BreakOut</title>
+        <script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>
+        <!--<script src="//cdn.jsdelivr.net/npm/phaser@3.0.0/dist/phaser.min.js"></script>-->
+    </head>
+    <body>
+        
+    
+    <script type="text/javascript">
+        /*
+            Jogo BreakOut comentado
+            Documentação: https://photonstorm.github.io/phaser-ce/Phaser.Game.html
+        */
+        
+        //a estrutura do game é criado com os parametros passados
+        //ordem -> width, height, renderer(optional), parent(optional), state (optional)
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
+
+        function preload() {
+
+            game.load.atlas('breakout', 'phaser-examples/examples/assets/games/breakout/breakout.png', 'phaser-examples/examples/assets/games/breakout/breakout.json');
+            game.load.image('starfield', 'phaser-examples/examples/assets/misc/starfield.jpg');
+//-- som do início do jogo 
+			game.load.audio('start', 'phaser-examples/examples/assets/audio/SoundEffects/ball-origin-beep.ogg');
+//-- som da bola batendo na prancha			
+			game.load.audio('paddle', 'phaser-examples/examples/assets/audio/SoundEffects/paddle-beep.ogg');
+//-- som da bola quebrando os blocos
+			game.load.audio('blocks', 'phaser-examples/examples/assets/audio/SoundEffects/red-beep.ogg');
+//-- som da bola batendo na parede
+			game.load.audio('wall', 'phaser-examples/examples/assets/audio/SoundEffects/wall-beep.ogg');
+        }
+
+        var ball;
+        var paddle;
+        var bricks;
+
+        var ballOnPaddle = true;
+
+        var lives = 3;
+        var score = 0;
+
+        var scoreText;
+        var livesText;
+        var introText;
+
+        var s;
+
+//--	
+		var wallPositionFlagSound = 1;
+        function create() {
+
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+
+//--	Here we set-up our audio sprites
+			startSound = game.add.audio('start');
+			paddleSound = game.add.audio('paddle');
+			blocksSound = game.add.audio('blocks');
+			wallSound = game.add.audio('wall');
+			//.allowMultiple = true;
+			//.play();
+
+            //  We check bounds collisions against all walls other than the bottom one
+            // checa a fisica de colisao com a parte de baixo do jogo
+            game.physics.arcade.checkCollision.down = false;
+            //adiciona um plano de fundo ao jogo
+            s = game.add.tileSprite(0, 0, 800, 600, 'starfield');
+
+            bricks = game.add.group();
+            bricks.enableBody = true; //true para dizer que o objeto tem um corpo
+            bricks.physicsBodyType = Phaser.Physics.ARCADE; //a fisica do corpo é do tipo ARCADE
+
+            var brick;
+            
+            //atraves de matriz, é criado a quantidade de blocos presentes no game, com quatro linhas e quinze colunas
+            //bricks.create -> cria os blocos com os parametros de: distancia no eixo x e y
+            //utiliza o json, e pocura pelas png que contem 'brick', a medida que a linha é alterada, a figura muda
+            //body.immovable permite o objeto ser imóvel, assim a bola bate no bloco e volta
+            for (var y = 0; y < 4; y++)
+            {
+                for (var x = 0; x < 15; x++)
+                {
+                    brick = bricks.create(120 + (x * 36), 100 + (y * 52), 'breakout', 'brick_' + (y+1) + '_1.png');
+                    brick.body.bounce.set(1);
+                    brick.body.immovable = true;
+                }
+            }
+            //add um sprite para o paddle, no centro do mundo
+            paddle = game.add.sprite(game.world.centerX, 500, 'breakout', 'paddle_big.png');
+            //add a anchor na position -> width * 0.5, height * 0,5 do objeto
+            paddle.anchor.setTo(0.5, 0.5);
+
+            game.physics.enable(paddle, Phaser.Physics.ARCADE);
+            //configura as funcoes do paddle
+            paddle.body.collideWorldBounds = true;
+            paddle.body.bounce.set(1);
+            paddle.body.immovable = true; //true para dizer que o objeto é imovel em relação ao mundo
+
+            //add um sprite para a ball, no centro do mundo
+            //y-16 para subir a posicao
+            ball = game.add.sprite(game.world.centerX, paddle.y - 16, 'breakout', 'ball_1.png');
+            ball.anchor.set(0.5);
+            ball.checkWorldBounds = true;
+
+            game.physics.enable(ball, Phaser.Physics.ARCADE);
+            
+            ball.body.collideWorldBounds = true;
+            ball.body.bounce.set(1);
+            
+            //add uma animação para a ball
+            ball.animations.add('spin', [ 'ball_1.png', 'ball_2.png', 'ball_3.png', 'ball_4.png', 'ball_5.png' ], 50, true, false);
+
+            ball.events.onOutOfBounds.add(ballLost, this); //case a ball saia do mapa, é ativado a funcao ballLost
+
+            //configura os textos presentes no game
+            scoreText = game.add.text(32, 550, 'score: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
+            livesText = game.add.text(680, 550, 'lives: 3', { font: "20px Arial", fill: "#ffffff", align: "left" });
+            introText = game.add.text(game.world.centerX, 400, '- click to start -', { font: "40px Arial", fill: "#ffffff", align: "center" });
+            introText.anchor.setTo(0.5, 0.5);
+            
+            //quando o game verifica que o usuario clicou, ele chama a funcao releaseBall
+            game.input.onDown.add(releaseBall, this);
+		}
+
+
+        function update () {
+
+            //  Fun, but a little sea-sick inducing :) Uncomment if you like!
+            //s.tilePosition.x += (game.input.speed.x / 2);
+
+            //a medida que o mouse mova no eixo x, o paddle tambem move
+            paddle.x = game.input.x;
+            
+            if (paddle.x < 24)
+            {
+                paddle.x = 24;
+            }
+            else if (paddle.x > game.width - 24)
+            {
+                paddle.x = game.width - 24;
+            }
+
+            if (ballOnPaddle)
+            {
+                //fazer a bola movimentar junto do paddle
+                ball.body.x = paddle.x;
+            }
+            else
+            {
+                //configurar a colisao da ball com paddle e bricks
+                game.physics.arcade.collide(ball, paddle, ballHitPaddle, null, this);
+                game.physics.arcade.collide(ball, bricks, ballHitBrick, null, this);
+            }
+//---  inspeciona a posição da bola e verifica se está colidindo com a parede   
+			if(ball.body.x <= wallPositionFlagSound - 1 || ball.body.x >= 785 - wallPositionFlagSound || ball.body.y < wallPositionFlagSound)
+			{
+				wallSound.play();
+			}
+        }
+
+
+        function releaseBall () {
+
+            //configuracoes da bola apos sair do paddle
+            if (ballOnPaddle)
+            {
+//-- som de inicio de jogo
+				paddleSound.play();
+                ballOnPaddle = false; //false para dizer que a bola não está no paddle
+                ball.body.velocity.y = -300; //configura uma velocity aleatoria no eixo y
+                ball.body.velocity.x = -75; //configura uma velocity aleatoria no eixo x
+                ball.animations.play('spin');
+                introText.visible = false; //deixa o introText não mais visivel
+            }
+
+        }
+
+        function ballLost () {
+
+            //quando a bola sai do game, o usuario perde vidas
+            //caso lives nao seja igual a zero, o game é resetado para o estado original
+            //caso seja zero, é chamado a funcao gameOver
+            lives--;
+            livesText.text = 'lives: ' + lives;
+
+            if (lives === 0)
+            {
+                gameOver();
+            }
+            else
+            {
+                ballOnPaddle = true;
+
+                ball.reset(paddle.body.x + 16, paddle.y - 16);
+
+                ball.animations.stop();
+            }
+
+        }
+
+        function gameOver () {
+
+            //zera a velocidade da bola em ambos os eixos
+            ball.body.velocity.setTo(0, 0);
+
+            introText.text = 'Game Over!';
+            introText.visible = true;
+
+        }
+
+        function ballHitBrick (_ball, _brick) {
+
+//-- som da colisão nos blocos
+			blocksSound.play();
+            //se tocar no brick, ele é destruido
+            _brick.kill();
+
+            //é somado uma pontuação
+            score += 10;
+            
+            scoreText.text = 'score: ' + score;
+
+            //  Are they any bricks left?
+            if (bricks.countLiving() == 0)
+            {
+                //  New level starts
+                score += 1000;
+                scoreText.text = 'score: ' + score;
+                introText.text = '- Next Level -';
+
+                //  Let's move the ball back to the paddle
+                ballOnPaddle = true;
+                ball.body.velocity.set(0);
+                ball.x = paddle.x + 16;
+                ball.y = paddle.y - 16;
+                ball.animations.stop();
+
+                //  And bring the bricks back from the dead :)
+                bricks.callAll('revive');
+            }
+
+        }
+
+        function ballHitPaddle (_ball, _paddle) {
+
+//-- som da prancha		
+			paddleSound.play();
+            var diff = 0;
+            //verifica em que posicao a ball tocou no paddle para calcular sua velocidade
+
+            if (_ball.x < _paddle.x)
+            {
+                //  Ball is on the left-hand side of the paddle
+                diff = _paddle.x - _ball.x;
+                _ball.body.velocity.x = (-10 * diff);
+            }
+            else if (_ball.x > _paddle.x)
+            {
+                //  Ball is on the right-hand side of the paddle
+                diff = _ball.x -_paddle.x;
+                _ball.body.velocity.x = (10 * diff);
+            }
+            else
+            {
+                //  Ball is perfectly in the middle
+                //  Add a little random X to stop it bouncing straight up!
+                _ball.body.velocity.x = 2 + Math.random() * 8;
+            }
+
+        }
+    
+    </script>
+
+    </body>
+</html>
