@@ -33,7 +33,6 @@
 			game.load.audio('blocks', 'config/examples/assets/audio/SoundEffects/red-beep.ogg');
 //-- som da bola batendo na parede
 			game.load.audio('wall', 'config/examples/assets/audio/SoundEffects/wall-beep.ogg');
-=======
             game.load.atlas('breakout', 'assets/games/breakout/breakout.png', 'assets/games/breakout/breakout.json');
             game.load.image('starfield', 'assets/misc/starfield.jpg');
 //-- som do início do jogo 
@@ -275,17 +274,6 @@
             }else if(_brick.position.y == 100){
                 score+=25
             }
-
-           if(_brick.position.y == 256){
-                score+=10
-            }else if(_brick.position.y == 204){
-                score+=15
-            }else if(_brick.position.y == 152){
-                score+=20
-            }else if(_brick.position.y == 100){
-                score+=25
-            }
-                
             
             scoreText.text = 'score: ' + score;
             vx.text = 'x: ' + _ball.body.velocity.x;
