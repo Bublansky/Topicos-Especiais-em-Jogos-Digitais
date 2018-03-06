@@ -226,12 +226,41 @@
             if(_vel > 0) return 1;
             else return -1;
         }
+        
+         function bonus (_ball) {
+            if(_ball.body.velocity.y < 500){
+                for(var i =0;i < brickArray.length;i++){
+                    if(brickArray[i].position){
+                        
+                        
+                    }    
+                }
+                
+            }
+            
+        }
+
+         
 
         function ballHitBrick (_ball, _brick) {
 
 //-- som da colisão nos blocos
 			blocksSound.play();
             //se tocar no brick, ele é destruido
+            if(_brick.position.y == 256){
+                score+=10;
+                bonus(_ball);
+            }else if(_brick.position.y == 204){
+                score+=15;
+                 bonus(_ball);
+            }else if(_brick.position.y == 152){
+                score+=20;
+                 bonus(_ball);
+            }else if(_brick.position.y == 100){
+                score+=25;
+                bonus(_ball);
+            }
+        
             
             switch(_brick.position.y) {
                 case 100:
@@ -252,6 +281,7 @@
                     //_brick.body.bounce.set(20);
                     break;
             }
+            
             
             _brick.kill();
             
