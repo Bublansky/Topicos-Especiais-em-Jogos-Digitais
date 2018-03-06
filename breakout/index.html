@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <title>BreakOut</title>
-        <script src="../../phaser-ce/build/phaser.min.js"></script>
+        <!--<script src="../../phaser-ce/build/phaser.min.js"></script>-->
         <!--<script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>-->
         <script src="js/phaser.min.js"></script>
         <!--<script src="//cdn.jsdelivr.net/npm/phaser@3.0.0/dist/phaser.min.js"></script>-->
@@ -23,16 +23,6 @@
 
         function preload() {
 
-            game.load.atlas('breakout', 'config/examples/assets/games/breakout/breakout.png', 'config/examples/assets/games/breakout/breakout.json');
-            game.load.image('starfield', 'config/examples/assets/misc/starfield.jpg');
-//-- som do início do jogo 
-			game.load.audio('start', 'config/examples/assets/audio/SoundEffects/ball-origin-beep.ogg');
-//-- som da bola batendo na prancha			
-			game.load.audio('paddle', 'config/examples/assets/audio/SoundEffects/paddle-beep.ogg');
-//-- som da bola quebrando os blocos
-			game.load.audio('blocks', 'config/examples/assets/audio/SoundEffects/red-beep.ogg');
-//-- som da bola batendo na parede
-			game.load.audio('wall', 'config/examples/assets/audio/SoundEffects/wall-beep.ogg');
             game.load.atlas('breakout', 'assets/games/breakout/breakout.png', 'assets/games/breakout/breakout.json');
             game.load.image('starfield', 'assets/misc/starfield.jpg');
 //-- som do início do jogo 
