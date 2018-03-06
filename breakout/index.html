@@ -217,8 +217,16 @@
             //se tocar no brick, ele é destruido
             _brick.kill();
 
-            //é somado uma pontuação
-            score += 10;
+           if(_brick.position.y == 256){
+                score+=10
+            }else if(_brick.position.y == 204){
+                score+=15
+            }else if(_brick.position.y == 152){
+                score+=20
+            }else if(_brick.position.y == 100){
+                score+=25
+            }
+                
             
             scoreText.text = 'score: ' + score;
 
