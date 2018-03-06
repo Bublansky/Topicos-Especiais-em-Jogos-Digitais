@@ -3,7 +3,8 @@
     <head>
         <meta charset="UTF-8" />
         <title>BreakOut</title>
-        <script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>
+        <script src="../../phaser-ce/build/phaser.min.js"></script>
+        <!--<script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>-->
         <!--<script src="//cdn.jsdelivr.net/npm/phaser@3.0.0/dist/phaser.min.js"></script>-->
     </head>
     <body>
@@ -21,20 +22,21 @@
 
         function preload() {
 
-            game.load.atlas('breakout', 'phaser-examples/examples/assets/games/breakout/breakout.png', 'phaser-examples/examples/assets/games/breakout/breakout.json');
-            game.load.image('starfield', 'phaser-examples/examples/assets/misc/starfield.jpg');
+            game.load.atlas('breakout', 'config/examples/assets/games/breakout/breakout.png', 'config/examples/assets/games/breakout/breakout.json');
+            game.load.image('starfield', 'config/examples/assets/misc/starfield.jpg');
 //-- som do início do jogo 
-			game.load.audio('start', 'phaser-examples/examples/assets/audio/SoundEffects/ball-origin-beep.ogg');
+			game.load.audio('start', 'config/examples/assets/audio/SoundEffects/ball-origin-beep.ogg');
 //-- som da bola batendo na prancha			
-			game.load.audio('paddle', 'phaser-examples/examples/assets/audio/SoundEffects/paddle-beep.ogg');
+			game.load.audio('paddle', 'config/examples/assets/audio/SoundEffects/paddle-beep.ogg');
 //-- som da bola quebrando os blocos
-			game.load.audio('blocks', 'phaser-examples/examples/assets/audio/SoundEffects/red-beep.ogg');
+			game.load.audio('blocks', 'config/examples/assets/audio/SoundEffects/red-beep.ogg');
 //-- som da bola batendo na parede
-			game.load.audio('wall', 'phaser-examples/examples/assets/audio/SoundEffects/wall-beep.ogg');
+			game.load.audio('wall', 'config/examples/assets/audio/SoundEffects/wall-beep.ogg');
         }
 
         var ball;
         var paddle;
+        var brick;
         var bricks;
 
         var ballOnPaddle = true;
@@ -45,7 +47,14 @@
         var scoreText;
         var livesText;
         var introText;
+        var vx;
+        var vy;
 
+        var v1 = 10;
+        var v2 = 20;
+        var v3 = 30;
+        var v4 = 40;
+        
         var s;
 
 //--	
@@ -72,7 +81,7 @@
             bricks.enableBody = true; //true para dizer que o objeto tem um corpo
             bricks.physicsBodyType = Phaser.Physics.ARCADE; //a fisica do corpo é do tipo ARCADE
 
-            var brick;
+            //var brick;
             
             //atraves de matriz, é criado a quantidade de blocos presentes no game, com quatro linhas e quinze colunas
             //bricks.create -> cria os blocos com os parametros de: distancia no eixo x e y
@@ -103,7 +112,7 @@
             ball = game.add.sprite(game.world.centerX, paddle.y - 16, 'breakout', 'ball_1.png');
             ball.anchor.set(0.5);
             ball.checkWorldBounds = true;
-
+        
             game.physics.enable(ball, Phaser.Physics.ARCADE);
             
             ball.body.collideWorldBounds = true;
@@ -119,6 +128,8 @@
             livesText = game.add.text(680, 550, 'lives: 3', { font: "20px Arial", fill: "#ffffff", align: "left" });
             introText = game.add.text(game.world.centerX, 400, '- click to start -', { font: "40px Arial", fill: "#ffffff", align: "center" });
             introText.anchor.setTo(0.5, 0.5);
+            vx = game.add.text(10, 10, 'x: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
+            vy = game.add.text(10, 50, 'y: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
             
             //quando o game verifica que o usuario clicou, ele chama a funcao releaseBall
             game.input.onDown.add(releaseBall, this);
@@ -209,18 +220,56 @@
             introText.visible = true;
 
         }
+        
+        function calc(_vel) {
+            if(_vel > 0) return 1;
+            else return -1;
+        }
 
         function ballHitBrick (_ball, _brick) {
 
 //-- som da colisão nos blocos
 			blocksSound.play();
             //se tocar no brick, ele é destruido
+            
+            switch(_brick.position.y) {
+                case 100:
+                    _ball.body.velocity.x += calc(_ball.body.velocity.x) * v4;
+                    _ball.body.velocity.y += calc(_ball.body.velocity.y) * v4;
+                    break;
+                case 152:
+                    _ball.body.velocity.x += calc(_ball.body.velocity.x) * v3;
+                    _ball.body.velocity.y += calc(_ball.body.velocity.y) * v3;
+                    break;
+                case 204:
+                    _ball.body.velocity.x += calc(_ball.body.velocity.x) * v2;
+                    _ball.body.velocity.y += calc(_ball.body.velocity.y) * v2;
+                    break;
+                case 256:
+                    _ball.body.velocity.x += calc(_ball.body.velocity.x) * v1;
+                    _ball.body.velocity.y += calc(_ball.body.velocity.y) * v1;
+                    //_brick.body.bounce.set(20);
+                    break;
+            }
+            
             _brick.kill();
+            
+            if(_brick.position.y == 256){
+                score+=10
+            }else if(_brick.position.y == 204){
+                score+=15
+            }else if(_brick.position.y == 152){
+                score+=20
+            }else if(_brick.position.y == 100){
+                score+=25
+            }
 
             //é somado uma pontuação
             score += 10;
             
             scoreText.text = 'score: ' + score;
+            vx.text = 'x: ' + _ball.body.velocity.x;
+            vy.text = 'y: ' + _ball.body.velocity.y;
 
             //  Are they any bricks left?
             if (bricks.countLiving() == 0)
@@ -250,11 +299,20 @@
             var diff = 0;
             //verifica em que posicao a ball tocou no paddle para calcular sua velocidade
 
+            
+            
+            ball.body.velocity.y = -300; //configura uma velocity aleatoria no eixo y
+            ball.body.velocity.x = -75; //configura uma velocity aleatoria no eixo x
+            
+            vx.text = 'x: ' + _ball.body.velocity.x;
+            vy.text = 'y: ' + _ball.body.velocity.y;
+            
             if (_ball.x < _paddle.x)
             {
                 //  Ball is on the left-hand side of the paddle
                 diff = _paddle.x - _ball.x;
                 _ball.body.velocity.x = (-10 * diff);
+                
             }
             else if (_ball.x > _paddle.x)
             {
@@ -268,6 +326,9 @@
                 //  Add a little random X to stop it bouncing straight up!
                 _ball.body.velocity.x = 2 + Math.random() * 8;
             }
+            
+            vx.text = 'x: ' + _ball.body.velocity.x;
+            vy.text = 'y: ' + _ball.body.velocity.y;
 
         }
     
