@@ -44,21 +44,32 @@
 
         var lives = 3;
         var score = 0;
-
+        var alter = false;
         var scoreText;
         var livesText;
         var introText;
-        var vx;
-        var vy;
 
         var v1 = 10;
         var v2 = 20;
         var v3 = 30;
         var v4 = 40;
-        
+        var brickArray = [];
         var s;
-
-//--	
+        var conj = [];
+        function randomElements(number){
+            
+            var valor=0;
+            for(var i=0;i<number;i++){
+                valor = Math.random() * 60;
+                conj.push(parseInt(valor));
+            }
+            
+            return conj;
+        }
+        console.log(randomElements(5));
+        
+    
+	   
 		var wallPositionFlagSound = 1;
         function create() {
 
@@ -92,11 +103,17 @@
             {
                 for (var x = 0; x < 15; x++)
                 {
+                    
                     brick = bricks.create(120 + (x * 36), 100 + (y * 52), 'breakout', 'brick_' + (y+1) + '_1.png');
                     brick.body.bounce.set(1);
                     brick.body.immovable = true;
+                    brickArray.push(brick);
+                    
+                 
                 }
             }
+            
+            
             //add um sprite para o paddle, no centro do mundo
             paddle = game.add.sprite(game.world.centerX, 500, 'breakout', 'paddle_big.png');
             //add a anchor na position -> width * 0.5, height * 0,5 do objeto
@@ -129,8 +146,7 @@
             livesText = game.add.text(680, 550, 'lives: 3', { font: "20px Arial", fill: "#ffffff", align: "left" });
             introText = game.add.text(game.world.centerX, 400, '- click to start -', { font: "40px Arial", fill: "#ffffff", align: "center" });
             introText.anchor.setTo(0.5, 0.5);
-            vx = game.add.text(10, 10, 'x: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
-            vy = game.add.text(10, 50, 'y: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
+            
             
             //quando o game verifica que o usuario clicou, ele chama a funcao releaseBall
             game.input.onDown.add(releaseBall, this);
@@ -226,46 +242,87 @@
             if(_vel > 0) return 1;
             else return -1;
         }
-        
-         function bonus (_ball) {
-            if(_ball.body.velocity.y < 500){
-                for(var i =0;i < brickArray.length;i++){
-                    if(brickArray[i].position){
-                        
-                        
-                    }    
-                }
-                
-            }
+        function bonus(_ball,_brick){
+            
+             var item=Math.random()*3;
+            
+                 for(var i =0;i < brickArray.length;i++){
+                     if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
+                         
+                         if(brickArray.indexOf(i) && parseInt(item)==0){
+                            
+                            _ball.body.velocity.x += calc(_ball.body.velocity.x) * 200;
+                            _ball.body.velocity.y += calc(_ball.body.velocity.y) * 200;
+                             alter=true;
+                         }else if(brickArray.indexOf(i) && (parseInt(item)==1)){
+                            
+                             lives+=1;
+                         }else if(brickArray.indexOf(i) && (parseInt(item)==2)){
+                             console.log('3');
+                             score+=500;
+                         }
+                       
+                     }
+                 }
             
         }
+        function quebraAdj (_ball,_brick) {
+             
+            if(_ball.body.velocity.y > 600){
+                  
+                
+                for(var i =0;i < brickArray.length;i++){
+                    if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
+                        console.log(i);
+                        if(i==0 || i==15 || i==30 || i== 45){
+                             brickArray
+                             brickArray[i+1].kill();
+                        }else if(i==14 || i==29 ||i==44 || i== 59){
+                             brickArray[i-1].kill();
+                        }else{
+                              brickArray[i-1].kill();
+                              brickArray[i+1].kill();
+                         }
+                     }
+                }  
+                  
+             }else{
+                bonus(_ball,_brick);
+                 
+             }
+           }
+        
+        
 
-         
 
         function ballHitBrick (_ball, _brick) {
 
 //-- som da colisão nos blocos
 			blocksSound.play();
+             _brick.kill();
             //se tocar no brick, ele é destruido
             if(_brick.position.y == 256){
                 score+=10;
-                bonus(_ball);
+                quebraAdj(_ball,_brick);
             }else if(_brick.position.y == 204){
                 score+=15;
-                 bonus(_ball);
+                 quebraAdj(_ball,_brick);
             }else if(_brick.position.y == 152){
                 score+=20;
-                 bonus(_ball);
+                 quebraAdj(_ball,_brick);
             }else if(_brick.position.y == 100){
                 score+=25;
-                bonus(_ball);
+                quebraAdj(_ball,_brick);
             }
-        
-            
+             for(var i =0;i < brickArray.length;i++){
+                
+            }
+            if(alter){
             switch(_brick.position.y) {
                 case 100:
                     _ball.body.velocity.x += calc(_ball.body.velocity.x) * v4;
                     _ball.body.velocity.y += calc(_ball.body.velocity.y) * v4;
+                    
                     break;
                 case 152:
                     _ball.body.velocity.x += calc(_ball.body.velocity.x) * v3;
@@ -281,23 +338,17 @@
                     //_brick.body.bounce.set(20);
                     break;
             }
-            
-            
-            _brick.kill();
-            
-            if(_brick.position.y == 256){
-                score+=10
-            }else if(_brick.position.y == 204){
-                score+=15
-            }else if(_brick.position.y == 152){
-                score+=20
-            }else if(_brick.position.y == 100){
-                score+=25
+                alter = false;
             }
             
+            
+           
+            
+            
             scoreText.text = 'score: ' + score;
-            vx.text = 'x: ' + _ball.body.velocity.x;
-            vy.text = 'y: ' + _ball.body.velocity.y;
+            
+         //   vx.text = 'x: ' + _brick.position.x;
+        //    vy.text = 'y: ' + _brick.position.y;
 
             //  Are they any bricks left?
             if (bricks.countLiving() == 0)
@@ -331,9 +382,7 @@
             
             ball.body.velocity.y = -300; //configura uma velocity aleatoria no eixo y
             ball.body.velocity.x = -75; //configura uma velocity aleatoria no eixo x
-            
-            vx.text = 'x: ' + _ball.body.velocity.x;
-            vy.text = 'y: ' + _ball.body.velocity.y;
+    
             
             if (_ball.x < _paddle.x)
             {
@@ -355,8 +404,7 @@
                 _ball.body.velocity.x = 2 + Math.random() * 8;
             }
             
-            vx.text = 'x: ' + _ball.body.velocity.x;
-            vy.text = 'y: ' + _ball.body.velocity.y;
+          
 
         }
     
