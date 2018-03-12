@@ -66,7 +66,7 @@
             
             return conj;
         }
-        console.log(randomElements(5));
+        console.log(randomElements(7));
         
     
 	   
@@ -242,22 +242,40 @@
             if(_vel > 0) return 1;
             else return -1;
         }
+        
+        
+            
+        
         function bonus(_ball,_brick){
             
              var item=Math.random()*3;
-            
+                 
                  for(var i =0;i < brickArray.length;i++){
-                     if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
-                         
-                         if(brickArray.indexOf(i) && parseInt(item)==0){
-                            
+                     console.log(conj.find(
+                         function(elemento) {
+                           return elemento ==i;
+                         }));
+                        if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
+                          console.log(i+"-");
+                           console.log(parseInt(item)+'numero');
+                         if(conj.find(
+                         function(elemento) {
+                           return elemento ==i;
+                         }) && parseInt(item)==0){
+                             console.log('1');
                             _ball.body.velocity.x += calc(_ball.body.velocity.x) * 200;
                             _ball.body.velocity.y += calc(_ball.body.velocity.y) * 200;
                              alter=true;
-                         }else if(brickArray.indexOf(i) && (parseInt(item)==1)){
-                            
+                         }else if(conj.find(
+                         function(elemento) {
+                             return elemento ==i;
+                         }) && (parseInt(item)==1)){
+                             console.log('2');
                              lives+=1;
-                         }else if(brickArray.indexOf(i) && (parseInt(item)==2)){
+                         }else if(conj.find(
+                         function(elemento) {
+                             return elemento ==i;
+                         }) && (parseInt(item)==2)){
                              console.log('3');
                              score+=500;
                          }
@@ -268,12 +286,12 @@
         }
         function quebraAdj (_ball,_brick) {
              
-            if(_ball.body.velocity.y > 600){
+            if(_ball.body.velocity.y > 500){
                   
                 
                 for(var i =0;i < brickArray.length;i++){
                     if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
-                        console.log(i);
+                        console.log(i+"--");
                         if(i==0 || i==15 || i==30 || i== 45){
                              brickArray
                              brickArray[i+1].kill();
@@ -340,6 +358,7 @@
             }
                 alter = false;
             }
+            _brick.kill();
             
             
            
