@@ -375,7 +375,7 @@ Game.prototype = {
             if (bricks.countLiving() == 0)
             {
                 
-                game.state.start('Game3');
+                this.game.state.start("Wins");
                 
                 //  New level starts
               //  score += 1000;
