@@ -1,6 +1,6 @@
-var GameOver = function(game) {};
+var Wins = function(game) {};
 
-GameOver.prototype = {
+Wins.prototype = {
 
   preload: function () {
     this.optionCount = 1;
@@ -34,7 +34,7 @@ GameOver.prototype = {
   },
 
   create: function () {
-    game.add.sprite(0, 0, 'gameover-bg');
+    game.add.sprite(0, 0, 'space-bg');
     var titleStyle = { font: 'bold 60pt TheMinion', fill: '#FDFFB5', align: 'center'};
     var text = game.add.text(game.world.centerX, 100, "CONGRATULATIONS!!", titleStyle);
     text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);

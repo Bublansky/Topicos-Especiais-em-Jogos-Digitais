@@ -9,7 +9,7 @@ Splash.prototype = {
     game.load.script('gamemenu','states/GameMenu.js');
     game.load.script('game', 'states/Game.js');
     game.load.script('gameover','states/GameOver.js');
-      game.load.script('Wins','states/Wins.js');
+    game.load.script('Wins','states/Wins.js');
     game.load.script('credits', 'states/Credits.js');
     game.load.script('options', 'states/Options.js');
   },
@@ -21,6 +21,7 @@ Splash.prototype = {
   },
   // varios freebies found from google image search
   loadImages: function () {
+      game.load.image('space-bg', 'assets/images/space-bg.jpg');
     game.load.image('menu-bg', 'assets/images/space-bg.png');
     game.load.image('options-bg', 'assets/images/options-bg.jpg');
     game.load.image('gameover-bg', 'assets/images/menu-bg.jpg');
