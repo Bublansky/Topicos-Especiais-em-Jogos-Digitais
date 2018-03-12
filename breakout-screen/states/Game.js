@@ -259,20 +259,33 @@ Game.prototype = {
         function bonus(_ball,_brick){
             
              var item=Math.random()*3;
-            
+                 
                  for(var i =0;i < brickArray.length;i++){
-                     if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
-                         
-                         if(brickArray.indexOf(i) && parseInt(item)==0){
-                            
+                     console.log(conj.find(
+                         function(elemento) {
+                           return elemento ==i;
+                         }));
+                        if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
+                          console.log(i+"-");
+                           console.log(parseInt(item)+'numero');
+                         if(conj.find(
+                         function(elemento) {
+                           return elemento ==i;
+                         }) && parseInt(item)==0){
+                             console.log('1');
                             _ball.body.velocity.x += calc(_ball.body.velocity.x) * 200;
                             _ball.body.velocity.y += calc(_ball.body.velocity.y) * 200;
                              alter=true;
-                         }else if(brickArray.indexOf(i) && (parseInt(item)==1)){
-                             //console.log('Vida: ',lives);
-                             //lives+=1;
-                             //console.log('Vida: ' + lives);
-                         }else if(brickArray.indexOf(i) && (parseInt(item)==2)){
+                         }else if(conj.find(
+                         function(elemento) {
+                             return elemento ==i;
+                         }) && (parseInt(item)==1)){
+                             console.log('2');
+                             lives+=1;
+                         }else if(conj.find(
+                         function(elemento) {
+                             return elemento ==i;
+                         }) && (parseInt(item)==2)){
                              console.log('3');
                              score+=500;
                          }
@@ -283,12 +296,12 @@ Game.prototype = {
         }
         function quebraAdj (_ball,_brick) {
              
-            if(_ball.body.velocity.y > 600){
+            if(_ball.body.velocity.y > 500){
                   
                 
                 for(var i =0;i < brickArray.length;i++){
                     if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
-                        console.log(i);
+                        console.log(i+"--");
                         if(i==0 || i==15 || i==30 || i== 45){
                              brickArray
                              brickArray[i+1].kill();
@@ -305,7 +318,7 @@ Game.prototype = {
                 bonus(_ball,_brick);
                  
              }
-           }   
+           }
         function ballHitBrick (_ball, _brick) {
             //-- som da colisão nos blocos
 			blocksSound.play();
