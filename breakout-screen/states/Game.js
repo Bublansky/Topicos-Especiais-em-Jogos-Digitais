@@ -28,7 +28,8 @@ var Game = function(game) {},
     wallPositionFlagSound = 1,
     w = 800,
     h = 600,
-    optionStyle = {font: '20pt TheMinion', fill: 'white', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    optionStyle = {font: '15pt TheMinion', fill: 'white', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+
 console.log(randomElements(5));
 
 Game.prototype = {
@@ -113,16 +114,18 @@ Game.prototype = {
             pause_label.inputEnabled = true;
             pause_label.events.onInputUp.add(function () {
                 game.paused = true;
-                menu = game.add.sprite(w/2,h/2, 'menu');
-                menu.anchor.setTo(0.5,0.5);
-                choiseLabel = game.add.text(w/2, h-150, 'Click outside menu to continue', {font: '30px Arial', fill: '#fff'});
-                choiseLabel.anchor.setTo(0.5,0.5);
+                pauseText = game.add.text(game.world.centerX - 150,350, 'Clique denovo para voltar', optionStyle);
+                //menu = game.add.sprite(w/2,h/2, 'menu');
+                //menu.anchor.setTo(0.5,0.5);
+                //choiseLabel = game.add.text(w/2, h-150, 'Click outside menu to continue', {font: '30px Arial', fill: '#fff'});
+                //choiseLabel.anchor.setTo(0.5,0.5);
             });
             game.input.onDown.add(unpause,self);
             
             backMenuText = game.add.text(20,20, 'Menu', optionStyle);
             backMenuText.inputEnabled = true;
             backMenuText.events.onInputUp.add(function (){
+               reInit();
                this.game.state.start("GameMenu"); 
             });
             
@@ -162,9 +165,19 @@ Game.prototype = {
 			}
         }
 }
+        function randomElements(number){
+            var valor = 0;
+            for(var i=0;i<number;i++){
+                valor = Math.random() * 60;
+                conj.push(parseInt(valor));
+            }
+            return conj;
+        }
         function unpause(event){
             if(game.paused){
-                console.log('error');
+                pauseText.destroy();
+                game.paused = false;
+                /*console.log('error');
                 var x1 = w/2 - 270/2, x2 = w/2 + 270/2,
                     y1 = h/2 - 180/2, y2 = h/2 + 180/2;
                 
@@ -182,7 +195,7 @@ Game.prototype = {
                     choiseLabel.destroy();
                     
                     game.paused = false;
-                }
+                }*/
             }
         };
         function randomElements(number){   
@@ -215,7 +228,9 @@ Game.prototype = {
             livesText.text = 'lives: ' + lives;
             if (lives === 0)
             {
-                gameOver();
+                //gameOver();
+                reInit();
+                this.game.state.start("GameOver");
             }
             else
             {
@@ -230,7 +245,13 @@ Game.prototype = {
             introText.text = 'Game Over!';
             introText.visible = true;
         }
-        
+        function reInit(){
+            ball.body.velocity.setTo(0,0);
+            ballOnPaddle = true;
+            ball.reset(paddle.body.x + 16, paddle.y - 16);
+            ball.animations.stop();
+            lives = 3; score = 0;
+        }
         function calc(_vel) {
             if(_vel > 0) return 1;
             else return -1;
@@ -284,8 +305,7 @@ Game.prototype = {
                 bonus(_ball,_brick);
                  
              }
-           }
-              
+           }   
         function ballHitBrick (_ball, _brick) {
             //-- som da colisão nos blocos
 			blocksSound.play();
