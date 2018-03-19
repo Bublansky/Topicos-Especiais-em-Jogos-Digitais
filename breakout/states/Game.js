@@ -7,6 +7,7 @@
         //ordem -> width, height, renderer(optional), parent(optional), state (optional)
         //var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
 var Game = function(game) {},
+    pad1,
     ball,
     paddle,
     brick,
@@ -158,22 +159,62 @@ Game.prototype = {
             
             //quando o game verifica que o usuario clicou, ele chama a funcao releaseBall
             game.input.onDown.add(releaseBall, this);
+		
+	    game.input.gamepad.start();
+            
+            // To listen to buttons from a specific pad listen directly on that pad game.input.gamepad.padX, where X = pad 1-4
+            pad1 = game.input.gamepad.pad1;
             
 		},
         update: function () {
             //  Fun, but a little sea-sick inducing :) Uncomment if you like!
             //s.tilePosition.x += (game.input.speed.x / 2);
             //a medida que o mouse mova no eixo x, o paddle tambem move
-            paddle.x = game.input.x;
+            if (game.input.gamepad.supported && game.input.gamepad.active && pad1.connected) {
+                if (pad1.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) || pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
+                    paddle.x -= 15;
+                }
+                
+                else if (pad1.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) || pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1) {
+                    paddle.x += 15;
+                }
+                
+                if (paddle.x < 24)
+                {
+                    paddle.x = 24;
+                }
+                else if (paddle.x > game.width - 24)
+                {
+                    paddle.x = game.width - 24;
+                }
+            }
             
-            if (paddle.x < paddle.body.width/2)
-            {
-                paddle.x = paddle.body.width/2;
+            else {
+                paddle.x = game.input.x;
+            
+                if (paddle.x < 24)
+                {
+                    paddle.x = 24;
+                }
+                else if (paddle.x > game.width - 24)
+                {
+                    paddle.x = game.width - 24;
+                }
             }
-            else if (paddle.x > game.width - paddle.body.width/2)
-            {
-                paddle.x = game.width - paddle.body.width/2;
-            }
+            
+            
+//            paddle.x = game.input.x;
+//        
+//            if (paddle.x < paddle.body.width/2)
+//            {
+//                paddle.x = paddle.body.width/2;
+//            }
+//            else if (paddle.x > game.width - paddle.body.width/2)
+//            {
+//                paddle.x = game.width - paddle.body.width/2;
+//            }
+		
+		
             if (ballOnPaddle)
             {
                 //fazer a bola movimentar junto do paddle
