@@ -96,7 +96,8 @@ Game.prototype = {
 					brick = bricks.create(120 + (x * 36), 100 + (y * 52), 'mario_brick', 0);
                     //var brick_mario = game.add.sprite(0, 0, 'mario_brick', 16, 16);
 					brick.scale.setTo(1.5);
-					brick.animations.add('brick_mario_destroy', [1], 0, true);
+					brick.animations.add('brick_mario_destroy', [0, 1], 20, false);
+					brick.animations.add('brick_mario_idle', [0], 20, false);
 					brick.body.bounce.set(1);
                     brick.body.immovable = true;
                     brickArray.push(brick);
@@ -165,18 +166,19 @@ Game.prototype = {
             //a medida que o mouse mova no eixo x, o paddle tambem move
             paddle.x = game.input.x;
             
-            if (paddle.x < 24)
+            if (paddle.x < paddle.body.width/2)
             {
-                paddle.x = 24;
+                paddle.x = paddle.body.width/2;
             }
-            else if (paddle.x > game.width - 24)
+            else if (paddle.x > game.width - paddle.body.width/2)
             {
-                paddle.x = game.width - 24;
+                paddle.x = game.width - paddle.body.width/2;
             }
             if (ballOnPaddle)
             {
                 //fazer a bola movimentar junto do paddle
-                ball.body.x = game.input.x - ball.body.width/2;
+                //ball.body.x = game.input.x - ball.body.width/2;
+				ball.x = paddle.x;
             }
             else
             {
@@ -185,7 +187,8 @@ Game.prototype = {
                 game.physics.arcade.collide(ball, bricks, ballHitBrick, null, this);
             }
             //---  inspeciona a posição da bola e verifica se está colidindo com a parede   
-			if(ball.body.x <= wallPositionFlagSound - 1 || ball.body.x >= 785 - wallPositionFlagSound || ball.body.y < wallPositionFlagSound)
+			//if(ball.body.x <= wallPositionFlagSound - 1 || ball.body.x >= 785 - wallPositionFlagSound || ball.body.y < wallPositionFlagSound)
+			if(ball.body.x < 1 || ball.body.x > 768 || ball.body.y < 1)
 			{
 				wallSound.play();
 			}
@@ -350,7 +353,9 @@ Game.prototype = {
            }
 		function destroyBrick(_brick)
 		{
-			blocksSound.play();
+			//blocksSound.play();
+			_brick.body.y = _brick.body.y + 10;
+			_brick.animations.play('brick_mario_idle');
 			_brick.kill();
 		}
         function ballHitBrick (_ball, _brick) {
@@ -358,10 +363,10 @@ Game.prototype = {
 			
 			scoreSound.play();
 			_brick.body.y = _brick.body.y - 10;
-			bricks.enableBody = false;
+			//bricks.enableBody = false;
 			_brick.animations.play('brick_mario_destroy');
 			
-			game.time.events.add(Phaser.Timer.SECOND/5, destroyBrick, this, _brick);
+			game.time.events.add(Phaser.Timer.SECOND/10, destroyBrick, this, _brick);
 			
             //se tocar no brick, ele é destruido
             if(_brick.position.y == 256){
@@ -410,7 +415,7 @@ Game.prototype = {
             //   vx.text = 'x: ' + _brick.position.x;
             //    vy.text = 'y: ' + _brick.position.y;
             //  Are they any bricks left?
-            if (bricks.countLiving() == 0)
+            if (bricks.countLiving() == 1)
             {
                 //  New level starts
                 score += 1000;
@@ -419,13 +424,19 @@ Game.prototype = {
                 //  Let's move the ball back to the paddle
                 ballOnPaddle = true;
                 ball.body.velocity.set(0);
-                ball.x = paddle.x + 16;
-                ball.y = paddle.y - 16;
+                ball.x = paddle.x;
+                ball.y = paddle.y - (paddle.body.height - 1)/2 - 12;
                 ball.animations.stop();
+				
                 //  And bring the bricks back from the dead :)
-                bricks.callAll('revive');
+                //bricks.callAll('revive');
+				game.time.events.add(Phaser.Timer.SECOND/10, reviveBricks, this);
             }
         }
+		function reviveBricks()
+		{
+			bricks.callAll('revive');
+		}
         function ballHitPaddle (_ball, _paddle) {
             //-- som da prancha		
 			paddleSound.play();
