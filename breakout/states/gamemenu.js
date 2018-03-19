@@ -12,7 +12,8 @@ GameMenu.prototype = {
     this.titleText = game.make.text(game.world.centerX, 100, "BreakOut", {
       font: 'bold 60pt TheMinion',
       //fill: '#FDFFB5',
-      fill: '#FFF',
+      //fill: '#FFF',
+	  fill: '#f70000',
       align: 'center'
     });
     this.titleText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);

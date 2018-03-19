@@ -28,23 +28,36 @@ var Game = function(game) {},
     wallPositionFlagSound = 1,
     w = 800,
     h = 600,
-    optionStyle = {font: '15pt TheMinion', fill: 'white', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    optionStyle = {font: "15pt 'SuperMario256'", fill: 'white', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
 
-console.log(randomElements(5));
+//console.log(randomElements(5));
 
 Game.prototype = {
     
         preload: function() {
+			
+			//Mario assets:
+			game.load.image('mario-background', 'assets/images/mario_theme/mario-background.jpg');
+			game.load.spritesheet('mario_brick', 'assets/images/mario_theme/brick_mario.png', 16, 16);
+			game.load.spritesheet('shell_turtle', 'assets/images/mario_theme/shell_turtle_31x24px.png', 31, 24);
+			game.load.spritesheet('mario-paddle', 'assets/images/mario_theme/paddle_mario_50x34px.png', 50, 34);
+			
             game.load.atlas('breakout', 'assets/games/breakout/breakout.png', 'assets/games/breakout/breakout.json');
             game.load.image('starfield', 'assets/misc/starfield.jpg');
             //-- som do início do jogo 
-			game.load.audio('start', 'assets/audio/SoundEffects/ball-origin-beep.ogg');
+			game.load.audio('start', 'assets/audio/SoundEffects/mario_sounds/start_sound.wav');
             //-- som da bola batendo na prancha			
-			game.load.audio('paddle', 'assets/audio/SoundEffects/paddle-beep.ogg');
+			game.load.audio('paddle', 'assets/audio/SoundEffects/mario_sounds/paddle_collide.wav');
+			//game.load.audio('paddle', 'assets/audio/SoundEffects/paddle-beep.ogg');
             //-- som da bola quebrando os blocos
-			game.load.audio('blocks', 'assets/audio/SoundEffects/red-beep.ogg');
+			game.load.audio('blocks', 'assets/audio/SoundEffects/mario_sounds/brick_break.wav');
+			//game.load.audio('blocks', 'assets/audio/SoundEffects/red-beep.ogg');
             //-- som da bola batendo na parede
-			game.load.audio('wall', 'assets/audio/SoundEffects/wall-beep.ogg');
+			game.load.audio('wall', 'assets/audio/SoundEffects/mario_sounds/wall_hit.wav');
+			//game.load.audio('wall', 'assets/audio/SoundEffects/wall-beep.ogg');
+			game.load.audio('addScore', 'assets/audio/SoundEffects/mario_sounds/add_score.wav');
+			
+			game.load.audio('addLife', 'assets/audio/SoundEffects/mario_sounds/life_up.wav');
         },
         	   
         create: function() {
@@ -54,13 +67,18 @@ Game.prototype = {
 			paddleSound = game.add.audio('paddle');
 			blocksSound = game.add.audio('blocks');
 			wallSound = game.add.audio('wall');
+			scoreSound = game.add.audio('addScore');
+			
+			lifeUpSound = game.add.audio('gameOver');
+			
 			//.allowMultiple = true;
 			//.play();
             //  We check bounds collisions against all walls other than the bottom one
             // checa a fisica de colisao com a parte de baixo do jogo
             game.physics.arcade.checkCollision.down = false;
             //adiciona um plano de fundo ao jogo
-            s = game.add.tileSprite(0, 0, 800, 600, 'starfield');
+            //s = game.add.tileSprite(0, 0, 800, 600, 'starfield');
+			s = game.add.tileSprite(0, 0, 800, 600, 'mario-background');
             bricks = game.add.group();
             bricks.enableBody = true; //true para dizer que o objeto tem um corpo
             bricks.physicsBodyType = Phaser.Physics.ARCADE; //a fisica do corpo é do tipo ARCADE
@@ -74,15 +92,21 @@ Game.prototype = {
             {
                 for (var x = 0; x < 15; x++)
                 {
-                    brick = bricks.create(120 + (x * 36), 100 + (y * 52), 'breakout', 'brick_' + (y+1) + '_1.png');
-                    brick.body.bounce.set(1);
+                    //brick = bricks.create(120 + (x * 36), 100 + (y * 52), 'breakout', 'brick_' + (y+1) + '_1.png');
+					brick = bricks.create(120 + (x * 36), 100 + (y * 52), 'mario_brick', 0);
+                    //var brick_mario = game.add.sprite(0, 0, 'mario_brick', 16, 16);
+					brick.scale.setTo(1.5);
+					brick.animations.add('brick_mario_destroy', [1], 0, true);
+					brick.body.bounce.set(1);
                     brick.body.immovable = true;
                     brickArray.push(brick);
                 }
             }
             
             //add um sprite para o paddle, no centro do mundo
-            paddle = game.add.sprite(game.world.centerX, 500, 'breakout', 'paddle_big.png');
+            //paddle = game.add.sprite(game.world.centerX, 500, 'breakout', 'paddle_big.png');
+			paddle = game.add.sprite(game.world.centerX, 500, 'mario-paddle');
+			paddle.scale.setTo(1.5);
             //add a anchor na position -> width * 0.5, height * 0,5 do objeto
             paddle.anchor.setTo(0.5, 0.5);
             game.physics.enable(paddle, Phaser.Physics.ARCADE);
@@ -92,8 +116,9 @@ Game.prototype = {
             paddle.body.immovable = true; //true para dizer que o objeto é imovel em relação ao mundo
             //add um sprite para a ball, no centro do mundo
             //y-16 para subir a posicao
-            ball = game.add.sprite(game.world.centerX, paddle.y - 16, 'breakout', 'ball_1.png');
-            ball.anchor.set(0.5);
+            //ball = game.add.sprite(game.world.centerX, paddle.y - 16, 'breakout', 'ball_1.png');
+			ball = game.add.sprite(game.world.centerX, paddle.y - (paddle.body.height - 1)/2 - 12, 'shell_turtle');
+            ball.anchor.set(0.5, 0.5);
             ball.checkWorldBounds = true;
         
             game.physics.enable(ball, Phaser.Physics.ARCADE);
@@ -102,7 +127,8 @@ Game.prototype = {
             ball.body.bounce.set(1);
             
             //add uma animação para a ball
-            ball.animations.add('spin', [ 'ball_1.png', 'ball_2.png', 'ball_3.png', 'ball_4.png', 'ball_5.png' ], 50, true, false);
+            //ball.animations.add('spin', [ 'ball_1.png', 'ball_2.png', 'ball_3.png', 'ball_4.png', 'ball_5.png' ], 50, true, false);
+			ball.animations.add('spin', [0, 1, 2, 3, 4], 10, true);
             ball.events.onOutOfBounds.add(ballLost, this); //case a ball saia do mapa, é ativado a funcao ballLost
             //configura os textos presentes no game
             scoreText = game.add.text(32, 550, 'score: 0', optionStyle);
@@ -150,7 +176,7 @@ Game.prototype = {
             if (ballOnPaddle)
             {
                 //fazer a bola movimentar junto do paddle
-                ball.body.x = paddle.x;
+                ball.body.x = game.input.x - ball.body.width/2;
             }
             else
             {
@@ -212,7 +238,7 @@ Game.prototype = {
             if (ballOnPaddle)
             {
                 //-- som de inicio de jogo
-				paddleSound.play();
+				startSound.play();
                 ballOnPaddle = false; //false para dizer que a bola não está no paddle
                 ball.body.velocity.y = -300; //configura uma velocity aleatoria no eixo y
                 ball.body.velocity.x = -75; //configura uma velocity aleatoria no eixo x
@@ -235,7 +261,8 @@ Game.prototype = {
             else
             {
                 ballOnPaddle = true;
-                ball.reset(paddle.body.x + 16, paddle.y - 16);
+                //ball.reset(paddle.body.x + 16, paddle.y - 16);
+				ball.reset(paddle.body.x, paddle.y - (paddle.body.height - 1)/2 - 12);
                 ball.animations.stop();
             }
         }
@@ -244,6 +271,7 @@ Game.prototype = {
             ball.body.velocity.setTo(0, 0);
             introText.text = 'Game Over!';
             introText.visible = true;
+			
         }
         function reInit(){
             ball.body.velocity.setTo(0,0);
@@ -261,18 +289,18 @@ Game.prototype = {
              var item=Math.random()*3;
                  
                  for(var i =0;i < brickArray.length;i++){
-                     console.log(conj.find(
+                     /*console.log(conj.find(
                          function(elemento) {
                            return elemento ==i;
-                         }));
+                         }));*/
                         if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
-                          console.log(i+"-");
-                           console.log(parseInt(item)+'numero');
+                          //console.log(i+"-");
+                           //console.log(parseInt(item)+'numero');
                          if(conj.find(
                          function(elemento) {
                            return elemento ==i;
                          }) && parseInt(item)==0){
-                             console.log('1');
+                             //console.log('1');
                             _ball.body.velocity.x += calc(_ball.body.velocity.x) * 200;
                             _ball.body.velocity.y += calc(_ball.body.velocity.y) * 200;
                              alter=true;
@@ -280,13 +308,14 @@ Game.prototype = {
                          function(elemento) {
                              return elemento ==i;
                          }) && (parseInt(item)==1)){
-                             console.log('2');
+                             //console.log('2');
+							 lifeUpSound.play();
                              lives+=1;
                          }else if(conj.find(
                          function(elemento) {
                              return elemento ==i;
                          }) && (parseInt(item)==2)){
-                             console.log('3');
+                             //console.log('3');
                              score+=500;
                          }
                        
@@ -301,7 +330,7 @@ Game.prototype = {
                 
                 for(var i =0;i < brickArray.length;i++){
                     if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
-                        console.log(i+"--");
+                        //console.log(i+"--");
                         if(i==0 || i==15 || i==30 || i== 45){
                              brickArray
                              brickArray[i+1].kill();
@@ -319,10 +348,21 @@ Game.prototype = {
                  
              }
            }
+		function destroyBrick(_brick)
+		{
+			blocksSound.play();
+			_brick.kill();
+		}
         function ballHitBrick (_ball, _brick) {
             //-- som da colisão nos blocos
-			blocksSound.play();
-             _brick.kill();
+			
+			scoreSound.play();
+			_brick.body.y = _brick.body.y - 10;
+			bricks.enableBody = false;
+			_brick.animations.play('brick_mario_destroy');
+			
+			game.time.events.add(Phaser.Timer.SECOND/5, destroyBrick, this, _brick);
+			
             //se tocar no brick, ele é destruido
             if(_brick.position.y == 256){
                 score+=10;
@@ -366,6 +406,7 @@ Game.prototype = {
 
             scoreText.text = 'score: ' + score;
             
+			//_brick.kill();
             //   vx.text = 'x: ' + _brick.position.x;
             //    vy.text = 'y: ' + _brick.position.y;
             //  Are they any bricks left?

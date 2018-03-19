@@ -4,6 +4,7 @@ GameOver.prototype = {
 
   preload: function () {
     this.optionCount = 1;
+	game.load.audio('gameOver', 'assets/audio/SoundEffects/mario_sounds/game_over.wav');
   },
 
   addMenuOption: function(text, callback) {
@@ -39,6 +40,8 @@ GameOver.prototype = {
     var text = game.add.text(game.world.centerX, 100, "Game Over", titleStyle);
     text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
     text.anchor.set(0.5);
+	gameOverSound = game.add.audio('gameOver');
+	gameOverSound.play();
     this.addMenuOption('Play Again', function (e) {
       this.game.state.start("Game");
     });
