@@ -1,17 +1,27 @@
 var Splash = function () {};
 
-Splash.prototype = {
 
+game.global = {
+		score: 0,
+        lives: 3
+};
+    
+Splash.prototype = {
+   
+    
   loadScripts: function () {
     game.load.script('style', 'lib/style.js');
     game.load.script('mixins', 'lib/mixins.js');
     game.load.script('WebFont', 'vendor/webfontloader.js');
     game.load.script('gamemenu','states/GameMenu.js');
     game.load.script('game', 'states/Game.js');
+    game.load.script('game2', 'states/Game2.js');
     game.load.script('gameover','states/GameOver.js');
     game.load.script('Wins','states/Wins.js');
     game.load.script('credits', 'states/Credits.js');
     game.load.script('options', 'states/Options.js');
+   
+    
   },
 
   loadBgm: function () {
@@ -59,12 +69,14 @@ Splash.prototype = {
   },
 
   addGameStates: function () {
-   game.state.add("Wins",Wins);
+    game.state.add("Wins",Wins);
     game.state.add("GameMenu",GameMenu);
     game.state.add("Game",Game);
     game.state.add("GameOver",GameOver);
     game.state.add("Credits",Credits);
     game.state.add("Options",Options);
+    game.state.add("Game2",Game2);
+   
   },
 
   addGameMusic: function () {

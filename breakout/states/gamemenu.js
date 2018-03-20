@@ -22,7 +22,8 @@ GameMenu.prototype = {
   },
 
   create: function () {
-
+    game.global.score =0;
+    game.global.lives =3;
     if (music.name !== "dangerous" && playMusic) {
       music.stop();
       music = game.add.audio('dangerous');

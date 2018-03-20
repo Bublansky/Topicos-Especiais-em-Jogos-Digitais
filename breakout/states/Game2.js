@@ -6,7 +6,7 @@
         //a estrutura do game é criado com os parametros passados
         //ordem -> width, height, renderer(optional), parent(optional), state (optional)
         //var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
-var Game = function(game) {},
+var Game2 = function(game) {},
     pad1,
     ball,
     paddle,
@@ -31,7 +31,7 @@ var Game = function(game) {},
 
     console.log(randomElements(5));
 
-Game.prototype = {
+Game2.prototype = {
     
         preload: function() {
 			
@@ -60,8 +60,6 @@ Game.prototype = {
         },
         	   
         create: function() {
-            game.global.score =0;
-            game.global.lives =3;
             game.physics.startSystem(Phaser.Physics.ARCADE);
             //--	Here we set-up our audio sprites
 			startSound = game.add.audio('start');
@@ -448,7 +446,7 @@ Game.prototype = {
                  game.global.score += 1000;
                 scoreText.text = 'score: ' +  game.global.score;
                 introText.text = '- Next Level -';
-                game.state.start('Game2');
+                game.state.start('Wins');
                 //  Let's move the ball back to the paddle
                 //ballOnPaddle = true;
                 //ball.body.velocity.set(0);
