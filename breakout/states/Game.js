@@ -31,7 +31,7 @@ var Game = function(game) {},
     h = 600,
     optionStyle = {font: "15pt 'SuperMario256'", fill: 'white', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
 
-//console.log(randomElements(5));
+    console.log(randomElements(5));
 
 Game.prototype = {
     
@@ -268,15 +268,7 @@ Game.prototype = {
                 }*/
             }
         };
-        function randomElements(number){   
-            var valor=0;
-            for(var i=0;i<number;i++){
-                valor = Math.random() * 60;
-                conj.push(parseInt(valor));
-            }
-            
-            return conj;
-        }
+        
         function releaseBall () {
             //configuracoes da bola apos sair do paddle
             if (ballOnPaddle)
@@ -328,23 +320,23 @@ Game.prototype = {
             if(_vel > 0) return 1;
             else return -1;
         }
-        function bonus(_ball,_brick){
+       function bonus(_ball,_brick){
             
              var item=Math.random()*3;
                  
                  for(var i =0;i < brickArray.length;i++){
-                     /*console.log(conj.find(
+                     console.log(conj.find(
                          function(elemento) {
                            return elemento ==i;
-                         }));*/
+                         }));
                         if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
-                          //console.log(i+"-");
-                           //console.log(parseInt(item)+'numero');
+                          console.log(i+"-");
+                           console.log(parseInt(item)+'numero');
                          if(conj.find(
                          function(elemento) {
                            return elemento ==i;
                          }) && parseInt(item)==0){
-                             //console.log('1');
+                             console.log('1');
                             _ball.body.velocity.x += calc(_ball.body.velocity.x) * 200;
                             _ball.body.velocity.y += calc(_ball.body.velocity.y) * 200;
                              alter=true;
@@ -352,14 +344,13 @@ Game.prototype = {
                          function(elemento) {
                              return elemento ==i;
                          }) && (parseInt(item)==1)){
-                             //console.log('2');
-							 lifeUpSound.play();
+                             console.log('2');
                              lives+=1;
                          }else if(conj.find(
                          function(elemento) {
                              return elemento ==i;
                          }) && (parseInt(item)==2)){
-                             //console.log('3');
+                             console.log('3');
                              score+=500;
                          }
                        
@@ -374,7 +365,7 @@ Game.prototype = {
                 
                 for(var i =0;i < brickArray.length;i++){
                     if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
-                        //console.log(i+"--");
+                        console.log(i+"--");
                         if(i==0 || i==15 || i==30 || i== 45){
                              brickArray
                              brickArray[i+1].kill();
