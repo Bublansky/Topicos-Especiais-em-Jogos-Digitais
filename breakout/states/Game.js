@@ -17,7 +17,7 @@ var Game = function(game) {},
     scoreText,
     livesText,
     introText,
-    v1 = 10,
+    v1 = 10,    
     v2 = 20,
     v3 = 30,
     v4 = 40,
@@ -60,8 +60,8 @@ Game.prototype = {
         },
         	   
         create: function() {
-            game.global.score =0;
-            game.global.lives =3;
+            game.global.score = 0;
+            game.global.lives = 3;
             game.physics.startSystem(Phaser.Physics.ARCADE);
             //--	Here we set-up our audio sprites
 			startSound = game.add.audio('start');
@@ -143,7 +143,7 @@ Game.prototype = {
             pause_label.inputEnabled = true;
             pause_label.events.onInputUp.add(function () {
                 game.paused = true;
-                pauseText = game.add.text(game.world.centerX - 150,350, 'Clique denovo para voltar', optionStyle);
+                pauseText = game.add.text(game.world.centerX - 150,350, 'Clique de novo para voltar', optionStyle);
                 //menu = game.add.sprite(w/2,h/2, 'menu');
                 //menu.anchor.setTo(0.5,0.5);
                 //choiseLabel = game.add.text(w/2, h-150, 'Click outside menu to continue', {font: '30px Arial', fill: '#fff'});
@@ -154,7 +154,7 @@ Game.prototype = {
             backMenuText = game.add.text(20,20, 'Menu', optionStyle);
             backMenuText.inputEnabled = true;
             backMenuText.events.onInputUp.add(function (){
-            
+                reInit();
                this.game.state.start("GameMenu"); 
             });
             
@@ -236,6 +236,13 @@ Game.prototype = {
 			}
         }
 }
+        function reInit(){
+            ball.body.velocity.setTo(0,0);
+            ballOnPaddle = true;
+            ball.reset(paddle.body.x + 16, paddle.y - 16);
+            ball.animations.stop();
+            lives = 3; score = 0;
+        }
         function randomElements(number){
             var valor = 0;
             for(var i=0;i<number;i++){
@@ -273,7 +280,7 @@ Game.prototype = {
         function releaseBall () {
             //configuracoes da bola apos sair do paddle
             if (ballOnPaddle)
-            {
+            {   
                 //-- som de inicio de jogo
 				startSound.play();
                 ballOnPaddle = false; //false para dizer que a bola não está no paddle
@@ -292,7 +299,7 @@ Game.prototype = {
             if (game.global.lives === 0)
             {
                 //gameOver();
-                
+                reInit();
                 this.game.state.start("GameOver");
             }
             else
