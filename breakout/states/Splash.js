@@ -35,7 +35,7 @@ Splash.prototype = {
 	game.load.image('space-bg', 'assets/images/space-bg.jpg');
     game.load.image('menu-bg', 'assets/images/space-bg.png');
     game.load.image('options-bg', 'assets/images/options-bg.jpg');
-    game.load.image('gameover-bg', 'assets/images/menu-bg.jpg');
+    game.load.image('gameover-bg', 'assets/images/mario-game-over-2.png');
   },
 
   loadFonts: function () {
