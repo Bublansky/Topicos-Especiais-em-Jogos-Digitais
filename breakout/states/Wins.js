@@ -7,7 +7,7 @@ Wins.prototype = {
   },
 
   addMenuOption: function(text, callback) {
-    var optionStyle = { font: '30pt TheMinion', fill: 'white', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+    var optionStyle = { font: '30pt SuperMario256', fill: 'white', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
     var txt = game.add.text(game.world.centerX, (this.optionCount * 80) + 300, text, optionStyle);
     txt.anchor.setTo(0.5);
     txt.stroke = "rgba(0,0,0,0";
@@ -35,7 +35,7 @@ Wins.prototype = {
 
   create: function () {
     game.add.sprite(0, 0, 'space-bg');
-    var titleStyle = { font: 'bold 60pt TheMinion', fill: '#FDFFB5', align: 'center'};
+    var titleStyle = { font: 'bold 60pt SuperMario256', fill: '#FDFFB5', align: 'center'};
     var text = game.add.text(game.world.centerX, 100, "CONGRATULATIONS!!", titleStyle);
     text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
     text.anchor.set(0.5);

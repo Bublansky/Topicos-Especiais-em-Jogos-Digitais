@@ -41,8 +41,8 @@ Splash.prototype = {
   loadFonts: function () {
     WebFontConfig = {
       custom: {
-        families: ['TheMinion'],
-        urls: ['assets/style/theminion.css']
+        families: ['SuperMario256'],
+        urls: ['assets/style/myCSS.css']
       }
     }
   },
