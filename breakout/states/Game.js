@@ -149,6 +149,7 @@ Game.prototype = {
                 //choiseLabel = game.add.text(w/2, h-150, 'Click outside menu to continue', {font: '30px Arial', fill: '#fff'});
                 //choiseLabel.anchor.setTo(0.5,0.5);
             });
+            reInit();
             game.input.onDown.add(unpause,self);
             
             backMenuText = game.add.text(20,20, 'Menu', optionStyle);
@@ -239,7 +240,7 @@ Game.prototype = {
         function reInit(){
             ball.body.velocity.setTo(0,0);
             ballOnPaddle = true;
-            ball.reset(paddle.body.x + 16, paddle.y - 16);
+            ball.reset(paddle.body.x, paddle.y - (paddle.body.height - 1)/2 - 12);
             ball.animations.stop();
             lives = 3; score = 0;
         }
