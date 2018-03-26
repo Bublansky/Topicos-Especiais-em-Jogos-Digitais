@@ -26,7 +26,7 @@ Splash.prototype = {
 
   loadBgm: function () {
     // thanks Kevin Macleod at http://incompetech.com/
-    game.load.audio('dangerous', 'assets/audio/Dangerous.mp3');
+    game.load.audio('mario-theme', 'assets/audio/SoundEffects/mario_sounds/SuperMarioBros.mp3');
     game.load.audio('exit', 'assets/audio/Exit the Premises.mp3');
   },
   // varios freebies found from google image search
@@ -80,7 +80,7 @@ Splash.prototype = {
   },
 
   addGameMusic: function () {
-    music = game.add.audio('dangerous');
+    music = game.add.audio('mario-theme');
     music.loop = true;
     music.play();
   },

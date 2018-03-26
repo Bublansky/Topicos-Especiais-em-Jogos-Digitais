@@ -60,12 +60,12 @@ GameMenu.prototype = {
   create: function () {
     game.global.score =0;
     game.global.lives =3;
-    if (music.name !== "dangerous" && playMusic) {
+    //if (music.name !== "mario-theme" && playMusic) {
       music.stop();
-      music = game.add.audio('dangerous');
+      music = game.add.audio('mario-theme');
       music.loop = true;
       music.play();
-    }
+    //}
     game.stage.disableVisibilityChange = true;
     game.add.sprite(0, 0, 'menu-bg');
     game.add.existing(this.titleText);
