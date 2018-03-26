@@ -9,8 +9,8 @@ GameMenu.prototype = {
   },
 
   init: function () {
-    this.titleText = game.make.text(game.world.centerX, 80, "Mario", {
-      font: 'bold 60pt SuperMario256',
+    this.titleText = game.make.text(game.world.centerX, 100, "MARIO BREAKOUT", {
+      font: 'bold 60pt SuperSuperMario256',
       //fill: '#FDFFB5',
       //fill: '#FFF',
 	  fill: '#f70000',
@@ -18,15 +18,6 @@ GameMenu.prototype = {
     });
     this.titleText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
     this.titleText.anchor.set(0.5);
-    this.titleText2 = game.make.text(game.world.centerX, 150, "BreakOut", {
-      font: 'bold 60pt SuperMario256',
-      //fill: '#FDFFB5',
-      //fill: '#FFF',
-      fill: '#f70000',
-      align: 'center'
-    });
-    this.titleText2.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
-    this.titleText2.anchor.set(0.5);
     this.optionCount = 1;
   },
     
@@ -60,16 +51,15 @@ GameMenu.prototype = {
   create: function () {
     game.global.score =0;
     game.global.lives =3;
-    //if (music.name !== "mario-theme" && playMusic) {
+    if (music.name !== "dangerous" && playMusic) {
       music.stop();
-      music = game.add.audio('mario-theme');
+      music = game.add.audio('dangerous');
       music.loop = true;
       music.play();
-    //}
+    }
     game.stage.disableVisibilityChange = true;
     game.add.sprite(0, 0, 'menu-bg');
     game.add.existing(this.titleText);
-    game.add.existing(this.titleText2);
 
     this.addMenuOption('Single Player', function () {
       music.stop();

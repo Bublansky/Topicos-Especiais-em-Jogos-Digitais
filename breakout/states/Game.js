@@ -17,7 +17,7 @@ var Game = function(game) {},
     scoreText,
     livesText,
     introText,
-    v1 = 10,    
+    v1 = 10,
     v2 = 20,
     v3 = 30,
     v4 = 40,
@@ -28,40 +28,28 @@ var Game = function(game) {},
     w = 800,
     h = 600,
     optionStyle = {font: "15pt 'SuperMario256'", fill: 'white', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+   
 
-    console.log(randomElements(5));
-
+       
+         if(game.global.Game1==true){
+                console.log('teste1');
+                randomElements(1);
+            }else if(game.global.Game2==true){
+                  
+                  console.log('teste2');
+                randomElements(60);
+            }else if(game.global.Game3==true){
+               
+                  console.log('teste3');
+                randomElements(60);
+            }
+        
+   
 Game.prototype = {
-    
-        preload: function() {
-			
-			//Mario assets:
-			game.load.image('mario-background', 'assets/images/mario_theme/mario-background.jpg');
-			game.load.spritesheet('mario_brick', 'assets/images/mario_theme/brick_mario.png', 16, 16);
-			game.load.spritesheet('shell_turtle', 'assets/images/mario_theme/shell_turtle_31x24px.png', 31, 24);
-			game.load.spritesheet('mario-paddle', 'assets/images/mario_theme/paddle_mario_50x34px.png', 50, 34);
-			
-            game.load.atlas('breakout', 'assets/games/breakout/breakout.png', 'assets/games/breakout/breakout.json');
-            game.load.image('starfield', 'assets/misc/starfield.jpg');
-            //-- som do início do jogo 
-			game.load.audio('start', 'assets/audio/SoundEffects/mario_sounds/start_sound.wav');
-            //-- som da bola batendo na prancha			
-			game.load.audio('paddle', 'assets/audio/SoundEffects/mario_sounds/paddle_collide.wav');
-			//game.load.audio('paddle', 'assets/audio/SoundEffects/paddle-beep.ogg');
-            //-- som da bola quebrando os blocos
-			game.load.audio('blocks', 'assets/audio/SoundEffects/mario_sounds/brick_break.wav');
-			//game.load.audio('blocks', 'assets/audio/SoundEffects/red-beep.ogg');
-            //-- som da bola batendo na parede
-			game.load.audio('wall', 'assets/audio/SoundEffects/mario_sounds/wall_hit.wav');
-			//game.load.audio('wall', 'assets/audio/SoundEffects/wall-beep.ogg');
-			game.load.audio('addScore', 'assets/audio/SoundEffects/mario_sounds/add_score.wav');
-			
-			game.load.audio('addLife', 'assets/audio/SoundEffects/mario_sounds/life_up.wav');
-        },
-        	   
+        
         create: function() {
-            game.global.score = 0;
-            game.global.lives = 3;
+            
+            
             game.physics.startSystem(Phaser.Physics.ARCADE);
             //--	Here we set-up our audio sprites
 			startSound = game.add.audio('start');
@@ -105,6 +93,8 @@ Game.prototype = {
                 }
             }
             
+            
+            
             //add um sprite para o paddle, no centro do mundo
             //paddle = game.add.sprite(game.world.centerX, 500, 'breakout', 'paddle_big.png');
 			paddle = game.add.sprite(game.world.centerX, 500, 'mario-paddle');
@@ -134,8 +124,9 @@ Game.prototype = {
             ball.events.onOutOfBounds.add(ballLost, this); //case a ball saia do mapa, é ativado a funcao ballLost
            
             //configura os textos presentes no game
-            scoreText = game.add.text(32, 550, 'score: 0', game.global.score);
-            livesText = game.add.text(680, 550, 'lives: 3',game.global.lives);
+           
+            scoreText = game.add.text(32, 550, 'score: 0', optionStyle);
+            livesText = game.add.text(680, 550, 'lives: 3', optionStyle);
             introText = game.add.text(game.world.centerX, 400, '- click to start -', optionStyle);
             introText.anchor.setTo(0.5, 0.5);
             
@@ -143,25 +134,27 @@ Game.prototype = {
             pause_label.inputEnabled = true;
             pause_label.events.onInputUp.add(function () {
                 game.paused = true;
-                pauseText = game.add.text(game.world.centerX - 150,350, 'Clique de novo para voltar', optionStyle);
+                pauseText = game.add.text(game.world.centerX - 150,350, 'Clique denovo para voltar', optionStyle);
                 //menu = game.add.sprite(w/2,h/2, 'menu');
                 //menu.anchor.setTo(0.5,0.5);
                 //choiseLabel = game.add.text(w/2, h-150, 'Click outside menu to continue', {font: '30px Arial', fill: '#fff'});
                 //choiseLabel.anchor.setTo(0.5,0.5);
             });
-            reInit();
             game.input.onDown.add(unpause,self);
             
             backMenuText = game.add.text(20,20, 'Menu', optionStyle);
             backMenuText.inputEnabled = true;
             backMenuText.events.onInputUp.add(function (){
-                reInit();
+            
                this.game.state.start("GameMenu"); 
             });
             
             //quando o game verifica que o usuario clicou, ele chama a funcao releaseBall
             game.input.onDown.add(releaseBall, this);
 		
+            
+       
+            
 	    game.input.gamepad.start();
             
             // To listen to buttons from a specific pad listen directly on that pad game.input.gamepad.padX, where X = pad 1-4
@@ -169,40 +162,41 @@ Game.prototype = {
             
 		},
         update: function () {
+            
             //  Fun, but a little sea-sick inducing :) Uncomment if you like!
             //s.tilePosition.x += (game.input.speed.x / 2);
             //a medida que o mouse mova no eixo x, o paddle tambem move
-            if (game.input.gamepad.supported && game.input.gamepad.active && pad1.connected) {
-                if (pad1.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) || pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
-                    paddle.x -= 15;
+                if (game.input.gamepad.supported && game.input.gamepad.active && pad1.connected) {
+                    if (pad1.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT) || pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1) {
+                        paddle.x -= 15;
+                    }
+
+                    else if (pad1.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) || pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1) {
+                        paddle.x += 15;
+                    }
+
+                    if (paddle.x < 24)
+                    {
+                        paddle.x = 24;
+                    }
+                    else if (paddle.x > game.width - 24)
+                    {
+                        paddle.x = game.width - 24;
+                    }
                 }
-                
-                else if (pad1.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT) || pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1) {
-                    paddle.x += 15;
+
+                else {
+                    paddle.x = game.input.x;
+
+                    if (paddle.x < 24)
+                    {
+                        paddle.x = 24;
+                    }
+                    else if (paddle.x > game.width - 24)
+                    {
+                        paddle.x = game.width - 24;
+                    }
                 }
-                
-                if (paddle.x < 24)
-                {
-                    paddle.x = 24;
-                }
-                else if (paddle.x > game.width - 24)
-                {
-                    paddle.x = game.width - 24;
-                }
-            }
-            
-            else {
-                paddle.x = game.input.x;
-            
-                if (paddle.x < 24)
-                {
-                    paddle.x = 24;
-                }
-                else if (paddle.x > game.width - 24)
-                {
-                    paddle.x = game.width - 24;
-                }
-            }
             
             
 //            paddle.x = game.input.x;
@@ -237,13 +231,6 @@ Game.prototype = {
 			}
         }
 }
-        function reInit(){
-            ball.body.velocity.setTo(0,0);
-            ballOnPaddle = true;
-            ball.reset(paddle.body.x, paddle.y - (paddle.body.height - 1)/2 - 12);
-            ball.animations.stop();
-            lives = 3; score = 0;
-        }
         function randomElements(number){
             var valor = 0;
             for(var i=0;i<number;i++){
@@ -281,7 +268,7 @@ Game.prototype = {
         function releaseBall () {
             //configuracoes da bola apos sair do paddle
             if (ballOnPaddle)
-            {   
+            {
                 //-- som de inicio de jogo
 				startSound.play();
                 ballOnPaddle = false; //false para dizer que a bola não está no paddle
@@ -300,7 +287,7 @@ Game.prototype = {
             if (game.global.lives === 0)
             {
                 //gameOver();
-                reInit();
+                
                 this.game.state.start("GameOver");
             }
             else
@@ -324,15 +311,18 @@ Game.prototype = {
             else return -1;
         }
        function bonus(_ball,_brick){
+           var item=0;
+            if(game.global.Game1==true){
+                item=Math.random()*3;
+            }
             
-             var item=Math.random()*3;
                  
                  for(var i =0;i < brickArray.length;i++){
                      console.log(conj.find(
                          function(elemento) {
                            return elemento ==i;
                          }));
-                        if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y )){
+                        if((brickArray[i].position.x == _brick.position.x) && (brickArray[i].position.y == _brick.position.y)){
                           console.log(i+"-");
                            console.log(parseInt(item)+'numero');
                          if(conj.find(
@@ -400,8 +390,10 @@ Game.prototype = {
 			_brick.body.y = _brick.body.y - 10;
 			//bricks.enableBody = false;
 			_brick.animations.play('brick_mario_destroy');
+			_brick.body.y = _brick.body.y + 10;
+			_brick.animations.play('brick_mario_idle');
+			_brick.kill();
 			
-			game.time.events.add(Phaser.Timer.SECOND/10, destroyBrick, this, _brick);
 			
             //se tocar no brick, ele é destruido
             if(_brick.position.y == 256){
@@ -450,22 +442,55 @@ Game.prototype = {
             //   vx.text = 'x: ' + _brick.position.x;
             //    vy.text = 'y: ' + _brick.position.y;
             //  Are they any bricks left?
-            if (bricks.countLiving() == 1)
+            if (bricks.countLiving() == 0)
             {
-                //  New level starts
-                 game.global.score += 1000;
-                scoreText.text = 'score: ' +  game.global.score;
-                introText.text = '- Next Level -';
-                game.state.start('Game2');
-                //  Let's move the ball back to the paddle
-                //ballOnPaddle = true;
-                //ball.body.velocity.set(0);
-            //    ball.x = paddle.x;
-            //    ball.y = paddle.y - (paddle.body.height - 1)/2 - 12;
-            //    ball.animations.stop();
-				
-                //  And bring the bricks back from the dead :)
-                //bricks.callAll('revive');
+                if(game.global.Game1==true){
+                    game.global.score += 1000;
+                    scoreText.text = 'score: ' +  game.global.score;
+                    introText.text = '- Next Level -';
+                    ballOnPaddle = true;
+                    ball.body.velocity.set(0);
+                    ball.x = paddle.x;
+                    ball.y = paddle.y - (paddle.body.height - 1)/2 - 12;
+                    ball.animations.stop();
+                    bricks.callAll('revive');
+                    game.global.Game1=false;
+                    game.global.Game2=true;
+                  
+                    
+                    
+                }else if(game.global.Game2==true){
+                    game.global.score += 1000;
+                    scoreText.text = 'score: ' +  game.global.score;
+                    introText.text = '- Next Level -';
+                    ballOnPaddle = true;
+                    ball.body.velocity.set(0);
+                    ball.x = paddle.x;
+                    ball.y = paddle.y - (paddle.body.height - 1)/2 - 12;
+                    ball.animations.stop();
+                    bricks.callAll('revive');
+                    game.global.Game2=false;
+                    game.global.Game3=true;
+                    
+                    
+                }else if(game.global.Game3==true){
+                    game.global.score += 1000;
+                    scoreText.text = 'score: ' +  game.global.score;
+                    introText.text = '- Next Level -';
+                    ballOnPaddle = true;
+                    ball.body.velocity.set(0);
+                    ball.x = paddle.x;
+                    ball.y = paddle.y - (paddle.body.height - 1)/2 - 12;
+                    ball.animations.stop();
+                    bricks.callAll('revive');
+                   
+                    game.global.Game3=false;
+                   
+                }else{
+                    this.game.state.start("Wins");
+                }
+              
+                
 			
             }
         }

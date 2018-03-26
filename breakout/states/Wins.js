@@ -34,6 +34,11 @@ Wins.prototype = {
   },
 
   create: function () {
+    game.global.Game1=true;
+    game.global.Game2=false;
+    game.global.Game3=false;
+    game.global.score=0;
+    game.global.lives=3; 
     game.add.sprite(0, 0, 'space-bg');
     var titleStyle = { font: 'bold 60pt SuperMario256', fill: '#FDFFB5', align: 'center'};
     var text = game.add.text(game.world.centerX, 100, "CONGRATULATIONS!!", titleStyle);
