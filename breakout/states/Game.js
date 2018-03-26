@@ -31,25 +31,17 @@ var Game = function(game) {},
    
 
        
-         if(game.global.Game1==true){
-                console.log('teste1');
-                randomElements(1);
-            }else if(game.global.Game2==true){
-                  
-                  console.log('teste2');
-                randomElements(60);
-            }else if(game.global.Game3==true){
-               
-                  console.log('teste3');
-                randomElements(60);
-            }
+         
         
    
 Game.prototype = {
         
         create: function() {
             
-            
+            if(game.global.Game1==true){
+                console.log('teste1');
+                randomElements(5);
+            }
             game.physics.startSystem(Phaser.Physics.ARCADE);
             //--	Here we set-up our audio sprites
 			startSound = game.add.audio('start');
@@ -456,6 +448,8 @@ Game.prototype = {
                     bricks.callAll('revive');
                     game.global.Game1=false;
                     game.global.Game2=true;
+                    conj=[];
+                    randomElements(7);
                   
                     
                     
@@ -471,6 +465,9 @@ Game.prototype = {
                     bricks.callAll('revive');
                     game.global.Game2=false;
                     game.global.Game3=true;
+                    conj=[];
+                    randomElements(8);
+                    
                     
                     
                 }else if(game.global.Game3==true){
@@ -485,6 +482,8 @@ Game.prototype = {
                     bricks.callAll('revive');
                    
                     game.global.Game3=false;
+                    conj=[];
+                    randomElements(9);
                    
                 }else{
                     this.game.state.start("Wins");
